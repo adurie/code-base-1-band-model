@@ -13,7 +13,8 @@
 #include <fstream>
 #include <string>
 /* #include "cunningham.h" */
-#include "cunningham_points_integration.h"
+#include "cunningham_spawn.h"
+/* #include "cunningham_points_integration.h" */
 /* #include "cunningham_points_adaptive.h" */
 
 using namespace std;

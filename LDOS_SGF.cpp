@@ -14,7 +14,8 @@
 #include <string>
 /* #include "cunningham_points_integration.h" */
 /* #include "cunningham_points_adaptive.h" */
-#include "cunningham.h"
+/* #include "cunningham.h" */
+#include "cunningham_spawn.h"
 
 using namespace std;
 typedef complex<double> dcomp;
