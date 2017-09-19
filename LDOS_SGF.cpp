@@ -59,11 +59,16 @@ int main() {
 	E_end = 2.99;
 	const double a = 1.;
 
-	cout<<"Enter the atomic plane n, for the DOS you wish to calculate"<<endl;
-	cin>>power;
-	cout<<"\nName the data file\n";
-	string Mydata;
-	cin.ignore(); getline(cin, Mydata);
+	/* cout<<"Enter the atomic plane n, for the DOS you wish to calculate"<<endl; */
+	/* cin>>power; */
+	/* cout<<"\nName the data file\n"; */
+
+	power = 8;
+
+	string Mydata = "test";
+
+	/* cin.ignore(); getline(cin, Mydata); */
+
 	ofstream Myfile;	
 	Mydata += ".txt";
 	Myfile.open( Mydata.c_str(),ios::trunc );
@@ -71,7 +76,8 @@ int main() {
 	double result = 0.;
 	for (double j=E_start;j<=E_end;j=j+0.01) {
 		/* result = kspace(params,&f,0,0); */	
-		result = kspace(&f, 3, 0, 48, a, j);
+		/* result = kspace(&f, 3, 0, 48, a, j); */
+		result = kspace(&f, 3, 0, a, j);
 		result =a*a*result/(4.*M_PI*M_PI*M_PI);
 		Myfile<<j<<" , "<<result<<endl;
 	}

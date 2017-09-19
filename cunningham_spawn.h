@@ -44,55 +44,8 @@ double Condition(const Eigen::VectorXcd &result, const Eigen::VectorXcd &part_re
 	return condition;
 }
 
-template <typename func, typename... Args, typename ret>// a triangle can spawn square and triangles, but only triangles when x = z
-ret aux_tri(func&& predicate, int depth, double rel, double v, double w, const ret& f, double A, const double a, Args&&... params)
-{
-	ret f_1, f_2, f_3, f_4, f_5, f_6;
-	double x, z;
-	x = v;		z = w;	
-	f_1 = (1/9.)*f;
-
-	x = v + 2*A;	z = w;	
-	f_2 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
-
-	x = v + 2*A;	z = w + 2*A;	
-	f_3 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
-
-	x = v;	z = w - 2*A;	
-	f_4 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
-
-	x = v + 2*A;	z = w - 2*A;	
-	f_5 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
-
-	x = v - 2*A;	z = w - 2*A;	
-	f_6 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
-
-	ret f_total;
-	f_total = f_1 + f_2 + f_3 + f_4 + f_5 + f_6;
-
-	double rel_error;
-	rel_error = Condition(f_total, f);//condition overloaded for all data types this header is designed for
-
-	if (rel_error <= error)
-		return f_total;
-
-	//begin spawning points around points already integrated over
-	ret g_1, g_2, g_3, g_4, g_5, g_6;
-
-	g_1 = aux_tri(predicate, depth, error, v, w, f_1, A/3., a, params...);
-	g_2 = aux_square(predicate, depth, error, v + 2*A, w, f_2, A/3., a, params...);
-	g_3 = aux_tri(predicate, depth, error, v + 2*A, w + 2*A, f_3, A/3., a, params...);
-	g_4 = aux_square(predicate, depth, error, v, w - 2*A, f_4, A/3., a, params...);
-	g_5 = aux_square(predicate, depth, error, v + 2*A, w - 2*A, f_5, A/3., a, params...);
-	g_6 = aux_tri(predicate, depth, error, v - 2*A, w - 2*A, f_6, A/3., a, params...);
-
-	ret g_total;
-	g_total = g_1 + g_2 + g_3 + g_4 + g_5 + g_6;
-	return g_total;
-}
-
 template <typename func, typename... Args, typename ret>// a square can only spawn a square
-ret aux_square(func&& predicate, int depth, double rel, double v, double w, const ret& f, double A, const double a, Args&&... params)
+ret aux_square(func&& predicate, int depth, double error, int n, double v, double w, const ret& f, double A, const double a, Args&&... params)
 {
 	ret f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9;
 	double x, z;
@@ -100,53 +53,125 @@ ret aux_square(func&& predicate, int depth, double rel, double v, double w, cons
 	f_1 = (1/9.)*f;
 
 	x = v;	z = w + 2*A;	
-	f_2 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_2 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = v;	z = w - 2*A;	
-	f_3 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_3 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = v + 2*A;	z = w;	
-	f_4 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_4 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = v + 2*A;	z = w + 2*A;	
-	f_5 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_5 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = v + 2*A;	z = w - 2*A;	
-	f_6 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_6 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = v - 2*A;	z = w;	
-	f_7 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_7 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = v - 2*A;	z = w + 2*A;	
-	f_8 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_8 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = v - 2*A;	z = w - 2*A;	
-	f_9 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+	/* cout<<x<<", "<<z<<endl; */
+	f_9 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	ret f_total;
 	f_total = f_1 + f_2 + f_3 + f_4 + f_5 + f_6 + f_7 + f_8 + f_9;
+	/* cout<<f_total<<" "<<f<<" square"<<endl; */
 
 	double rel_error;
 	rel_error = Condition(f_total, f);//condition overloaded for all data types this header is designed for
+		/* cout<<rel_error<<" tri"<<endl; */
 
-	if (rel_error <= error)
-		return f_total;
+	if (n>90){//avoids early convergence
+		if ((rel_error <= error) || (depth <= 0))
+			return f_total;
+	}
 
+	if ((rel_error > 0.7) && (f_total > 1e-4))//if the result is too erroneous, the function keeps iterating until convergence is achieved.
+		depth++;// This is because if neighbouring points are zero, the result will appear to 
+			//halve each time as each recursion is scaled, until convergence.
+			
 	//begin spawning points around points already integrated over
 	ret g_1, g_2, g_3, g_4, g_5, g_6, g_7, g_8, g_9;
 
-	g_1 = aux_square(predicate, depth, error, v, w, f_1, A/3., a, params...);
-	g_2 = aux_square(predicate, depth, error, v, w + 2*A, f_2, A/3., a, params...);
-	g_3 = aux_square(predicate, depth, error, v, w - 2*A, f_3, A/3., a, params...);
-	g_4 = aux_square(predicate, depth, error, v + 2*A, w, f_4, A/3., a, params...);
-	g_5 = aux_square(predicate, depth, error, v + 2*A, w + 2*A, f_5, A/3., a, params...);
-	g_6 = aux_square(predicate, depth, error, v + 2*A, w - 2*A, f_6, A/3., a, params...);
-	g_7 = aux_square(predicate, depth, error, v - 2*A, w, f_7, A/3., a, params...);
-	g_8 = aux_square(predicate, depth, error, v - 2*A, w + 2*A, f_8, A/3., a, params...);
-	g_9 = aux_square(predicate, depth, error, v - 2*A, w - 2*A, f_9, A/3., a, params...);
+	g_1 = aux_square(predicate, depth-1, error, n*9, v, w, f_1, A/3., a, params...);
+	g_2 = aux_square(predicate, depth-1, error, n*9, v, w + 2*A, f_2, A/3., a, params...);
+	g_3 = aux_square(predicate, depth-1, error, n*9, v, w - 2*A, f_3, A/3., a, params...);
+	g_4 = aux_square(predicate, depth-1, error, n*9, v + 2*A, w, f_4, A/3., a, params...);
+	g_5 = aux_square(predicate, depth-1, error, n*9, v + 2*A, w + 2*A, f_5, A/3., a, params...);
+	g_6 = aux_square(predicate, depth-1, error, n*9, v + 2*A, w - 2*A, f_6, A/3., a, params...);
+	g_7 = aux_square(predicate, depth-1, error, n*9, v - 2*A, w, f_7, A/3., a, params...);
+	g_8 = aux_square(predicate, depth-1, error, n*9, v - 2*A, w + 2*A, f_8, A/3., a, params...);
+	g_9 = aux_square(predicate, depth-1, error, n*9, v - 2*A, w - 2*A, f_9, A/3., a, params...);
 
 	ret g_total;
 	g_total = g_1 + g_2 + g_3 + g_4 + g_5 + g_6 + g_7 + g_8 + g_9;
+	return g_total;
+}
+
+template <typename func, typename... Args, typename ret>// a triangle can spawn square and triangles, but only triangles when x = z
+ret aux_tri(func&& predicate, int depth, double error, int n, double v, double w, const ret& f, double A, const double a, Args&&... params)
+{
+	ret f_1, f_2, f_3, f_4, f_5, f_6;
+	double x, z;
+	x = v;		z = w;	
+	f_1 = (1/9.)*f;
+
+	x = v + 2*A;	z = w;	
+	f_2 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+
+	x = v + 2*A;	z = w + 2*A;	
+	f_3 = (0.5/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+
+	x = v;	z = w - 2*A;	
+	f_4 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+
+	x = v + 2*A;	z = w - 2*A;	
+	f_5 = (1/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+
+	x = v - 2*A;	z = w - 2*A;	
+	f_6 = (0.5/(n*9.))*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
+
+	ret f_total;
+	f_total = f_1 + f_2 + f_3 + f_4 + f_5 + f_6;
+	/* cout<<f_total<<" "<<f<<" tri"<<endl; */
+	/* cout<<f_1<<" "<<f_2<<" "<<f_3<<" "<<f_4<<" "<<f_5<<" "<<f_6<<endl; */
+
+	double rel_error;
+	rel_error = Condition(f_total, f);//condition overloaded for all data types this header is designed for
+		/* cout<<rel_error<<" tri"<<endl; */
+
+	if (n>90){//avoids early convergence
+		if ((rel_error <= error) || (depth <= 0))
+			return f_total;
+	}
+
+	if ((rel_error > 0.7) && (f_total > 1e-4))//if the result is too erroneous, the function keeps iterating until convergence is achieved.
+		depth++;// This is because if neighbouring points are zero, the result will appear to 
+			//halve each time as each recursion is scaled, until convergence.
+
+	//begin spawning points around points already integrated over
+	ret g_1, g_2, g_3, g_4, g_5, g_6;
+
+	g_1 = aux_tri(predicate, depth-1, error, n*9, v, w, f_1, A/3., a, params...);
+	g_2 = aux_square(predicate, depth-1, error, n*9, v + 2*A, w, f_2, A/3., a, params...);
+	g_3 = aux_tri(predicate, depth-1, error, n*9, v + 2*A, w + 2*A, f_3, A/3., a, params...);
+	g_4 = aux_square(predicate, depth-1, error, n*9, v, w - 2*A, f_4, A/3., a, params...);
+	g_5 = aux_square(predicate, depth-1, error, n*9, v + 2*A, w - 2*A, f_5, A/3., a, params...);
+	g_6 = aux_tri(predicate, depth-1, error, n*9, v - 2*A, w - 2*A, f_6, A/3., a, params...);
+
+	ret g_total;
+	g_total = g_1 + g_2 + g_3 + g_4 + g_5 + g_6;
 	return g_total;
 }
 
@@ -157,7 +182,7 @@ auto kspace(func&& predicate, int depth, double rel, const double a, Args&&... p
 
 	double error;
 	if (rel == 0)
-		error = 0.002;
+		error = 0.02;
 	else
 		error = rel;
 	int max_width;
@@ -166,7 +191,7 @@ auto kspace(func&& predicate, int depth, double rel, const double a, Args&&... p
 	/* ofstream Myfile; */	
 	/* Myfile.open( Mydata.c_str(),ios::trunc ); */
 
-	const double A = M_PI/a;
+	double A = M_PI/a;
 	double x,z;
 	ret f;
 	double rel_error;
@@ -189,7 +214,7 @@ auto kspace(func&& predicate, int depth, double rel, const double a, Args&&... p
 	x = 5*A;	z = A;	
 	f_3 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
-	x = 3*A;	z = 5*A;	
+	x = 5*A;	z = 3*A;	
 	f_4 = (1/9.)*std::forward<func>(predicate)(x,z,a,std::forward<Args>(params)...);
 
 	x = 3*A;	z = 3*A;	
@@ -201,23 +226,28 @@ auto kspace(func&& predicate, int depth, double rel, const double a, Args&&... p
 	ret f_total;
 	f_total = f_1 + f_2 + f_3 + f_4 + f_5 + f_6;
 
-	rel_error = Condition(f_total, f);//condition overloaded for all data types this header is designed for
+	/* cout<<f_total<<" "<<f<<endl; */
+	/* cout<<f_1<<" "<<f_2<<" "<<f_3<<" "<<f_4<<" "<<f_5<<" "<<f_6<<endl; */
+	/* rel_error = Condition(f_total, f);//condition overloaded for all data types this header is designed for */
 
-	if (rel_error <= error)
-		return f_total*8*A*A;
+	/* if (rel_error <= error){ */
+	/* 	A = M_PI/a; */
+	/* 	return f_total*8*A*A; */
+	/* } */
 
 	//begin spawning points around points already integrated over
 	ret g_1, g_2, g_3, g_4, g_5, g_6;
 
-	g_1 = aux_tri(predicate, depth, error, A, A, f_1, A/3., a, params...);
-	g_2 = aux_square(predicate, depth, error, 3*A, A, f_2, A/3., a, params...);
-	g_3 = aux_square(predicate, depth, error, 5*A, A, f_3, A/3., a, params...);
-	g_4 = aux_square(predicate, depth, error, 3*A, 5*A, f_4, A/3., a, params...);
-	g_5 = aux_tri(predicate, depth, error, 3*A, 3*A, f_5, A/3., a, params...);
-	g_6 = aux_tri(predicate, depth, error, 5*A, 5*A, f_6, A/3., a, params...);
+	g_1 = aux_tri(predicate, depth, error, 9, A, A, f_1, A/3., a, params...);
+	g_2 = aux_square(predicate, depth, error, 9, 3*A, A, f_2, A/3., a, params...);
+	g_3 = aux_square(predicate, depth, error, 9, 5*A, A, f_3, A/3., a, params...);
+	g_4 = aux_square(predicate, depth, error, 9, 5*A, 3*A, f_4, A/3., a, params...);
+	g_5 = aux_tri(predicate, depth, error, 9, 3*A, 3*A, f_5, A/3., a, params...);
+	g_6 = aux_tri(predicate, depth, error, 9, 5*A, 5*A, f_6, A/3., a, params...);
 
 	ret g_total;
 	g_total = g_1 + g_2 + g_3 + g_4 + g_5 + g_6;
+	A = M_PI/a;
 	return g_total*8*A*A;
 }
 #endif
