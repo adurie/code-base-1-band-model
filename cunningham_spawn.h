@@ -90,17 +90,12 @@ ret aux_square(func&& predicate, int depth, double error, int n, double v, doubl
 
 	double rel_error;
 	rel_error = Condition(f_total, f);//condition overloaded for all data types this header is designed for
-		/* cout<<rel_error<<" tri"<<endl; */
 
-	if (n>90){//avoids early convergence
+	if ((rel_error != 0) || (n>90)){//avoids early convergence
 		if ((rel_error <= error) || (depth <= 0))
 			return f_total;
 	}
 
-	if ((rel_error > 0.7) && (f_total > 1e-4))//if the result is too erroneous, the function keeps iterating until convergence is achieved.
-		depth++;// This is because if neighbouring points are zero, the result will appear to 
-			//halve each time as each recursion is scaled, until convergence.
-			
 	//begin spawning points around points already integrated over
 	ret g_1, g_2, g_3, g_4, g_5, g_6, g_7, g_8, g_9;
 
@@ -149,16 +144,11 @@ ret aux_tri(func&& predicate, int depth, double error, int n, double v, double w
 
 	double rel_error;
 	rel_error = Condition(f_total, f);//condition overloaded for all data types this header is designed for
-		/* cout<<rel_error<<" tri"<<endl; */
 
-	if (n>90){//avoids early convergence
+	if ((rel_error != 0) || (n>90)){//avoids early convergence
 		if ((rel_error <= error) || (depth <= 0))
 			return f_total;
 	}
-
-	if ((rel_error > 0.7) && (f_total > 1e-4))//if the result is too erroneous, the function keeps iterating until convergence is achieved.
-		depth++;// This is because if neighbouring points are zero, the result will appear to 
-			//halve each time as each recursion is scaled, until convergence.
 
 	//begin spawning points around points already integrated over
 	ret g_1, g_2, g_3, g_4, g_5, g_6;
@@ -182,7 +172,7 @@ auto kspace(func&& predicate, int depth, double rel, const double a, Args&&... p
 
 	double error;
 	if (rel == 0)
-		error = 0.02;
+		error = 0.002;
 	else
 		error = rel;
 	int max_width;

@@ -6,7 +6,8 @@
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Eigenvalues>
 /* #include "cunningham_points_adaptive.h" */
-#include "cunningham.h"
+/* #include "cunningham.h" */
+#include "cunningham_spawn.h"
 
 using namespace Eigen;
 using namespace std;
@@ -113,7 +114,8 @@ int main() {
 // only include the next term for gamma point only calculations
 //	integral = integral + f(0.,0.,N,a);
 	/* integral = kspace(params, &f, 4096, 1e-5); */
-	integral = kspace(&f, 3, 1e-2, 768, a, N);
+	/* integral = kspace(&f, 3, 1e-2, 768, a, N); */
+	integral = kspace(&f, 5, 1e-3, a, N);//cunningham_spawn.h
 	Myfile<<"N , Gamma"<<endl;
 	for (int J=0;J<abs(N);++J) {
 

@@ -6,7 +6,8 @@
 #include <string>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Eigenvalues>
-#include "cunningham.h"
+/* #include "cunningham.h" */
+#include "cunningham_spawn.h"
 
 using namespace Eigen;
 using namespace std;
@@ -108,7 +109,7 @@ VectorXd f(const double a, const int N) {
 	result_complex.fill(0.);
 	for (int j=0; j!=10; j++){
 		E = Ef + (2.*j + 1.)*kT*M_PI*i;
-		result_complex = result_complex + kspace(&Rspace, 0, 5e-2, 0, a, E, N);
+		result_complex = result_complex + kspace(&Rspace, 2, 5e-2, a, E, N);
 	}
 	VectorXd result_return = result_complex.real();
 

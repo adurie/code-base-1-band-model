@@ -59,16 +59,11 @@ int main() {
 	E_end = 2.99;
 	const double a = 1.;
 
-	/* cout<<"Enter the atomic plane n, for the DOS you wish to calculate"<<endl; */
-	/* cin>>power; */
-	/* cout<<"\nName the data file\n"; */
-
-	power = 8;
-
-	string Mydata = "test";
-
-	/* cin.ignore(); getline(cin, Mydata); */
-
+	cout<<"Enter the atomic plane n, for the DOS you wish to calculate"<<endl;
+	cin>>power;
+	cout<<"\nName the data file\n";
+	string Mydata;
+	cin.ignore(); getline(cin, Mydata);
 	ofstream Myfile;	
 	Mydata += ".txt";
 	Myfile.open( Mydata.c_str(),ios::trunc );
