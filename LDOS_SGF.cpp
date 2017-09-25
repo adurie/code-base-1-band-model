@@ -26,6 +26,10 @@ int power;
 /* 	double j; */
 /* }; */
 
+/* double f(double x, double y, const double a, const double j){ */ 
+/* 	return 1; */
+/* } */
+
 double f(double x, double y, const double a, const double j) {
 	/* double E = params.j; */
 	double Pi(2.*asin(1));
